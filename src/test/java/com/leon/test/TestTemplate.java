@@ -1,11 +1,19 @@
 package com.leon.test;
 
+import java.awt.List;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.solr.core.SolrTemplate;
+import org.springframework.data.solr.core.query.Criteria;
+import org.springframework.data.solr.core.query.Crotch;
+import org.springframework.data.solr.core.query.Query;
+import org.springframework.data.solr.core.query.SimpleQuery;
+import org.springframework.data.solr.core.query.SolrDataQuery;
+import org.springframework.data.solr.core.query.result.ScoredPage;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -69,5 +77,64 @@ public class TestTemplate {
 		solrTemplate.commit();
 		
 	}
+	
+	@Test
+	public void addList(){
+		ArrayList list = new ArrayList();
+		for (int i = 0; i < 100; i++) {
+			TbItem item=  new TbItem();
+			
+			item.setId(i+1l);
+			item.setTitle("Iphone"+i);
+			item.setCategory("Smart Phone");
+			item.setSeller("Apple store");
+			item.setGoodsId(i+1l);
+			item.setPrice(new BigDecimal(3000.3+i));
+			item.setImage("d:\\a"+i+".jpg");
+			
+			list.add(item);
+		}
+
+		solrTemplate.saveBeans(list);
+		solrTemplate.commit();	
+		
+	}
+	
+	@Test
+	public void queryPagination(){
+		//
+		Query query= new SimpleQuery("*:*");
+		
+		ScoredPage<TbItem> pages = solrTemplate.queryForPage(query, TbItem.class);
+		
+		for (TbItem tbItem : pages.getContent()) {
+			System.out.println(tbItem.getTitle());
+			System.out.println(tbItem.getPrice());
+		}
+	} 
+	
+	@Test
+	public void queryWithCriteria(){
+		//
+		Query query= new SimpleQuery("*:*");
+		Criteria criteria=new Criteria("item_category").contains("Smart");
+		criteria=criteria.and("item_title").contains("2");
+		query.addCriteria(criteria);
+		
+		ScoredPage<TbItem> pages = solrTemplate.queryForPage(query, TbItem.class);
+		
+		for (TbItem tbItem : pages.getContent()) {
+			System.out.println(tbItem.getTitle()+","+tbItem.getPrice());
+		
+		}
+	} 
+	
+	@Test
+	public void deleteAll(){
+		Query query= new SimpleQuery("*:*");
+		solrTemplate.delete(query);
+		solrTemplate.commit();
+	}
+	
 	
 }
