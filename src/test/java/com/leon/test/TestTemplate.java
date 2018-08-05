@@ -16,7 +16,7 @@ import com.leon.pojo.TbItem;
 public class TestTemplate {
 	
 	@Autowired
-	private SolrTemplate sorlTemplate;
+	private SolrTemplate solrTemplate;
 	
 	@Test
 	public void testAdd() {
@@ -31,8 +31,8 @@ public class TestTemplate {
 			item.setPrice(new BigDecimal(300.3));
 			item.setImage("d:\\a.jpg");
 			
-			sorlTemplate.saveBean(item);
-			sorlTemplate.commit();
+			solrTemplate.saveBean(item);
+			solrTemplate.commit();
 			
 	}
 	
@@ -50,9 +50,24 @@ public class TestTemplate {
 			item.setPrice(new BigDecimal(300.3));
 			item.setImage("d:\\a.jpg");
 			
-			sorlTemplate.saveBean(item);
-			sorlTemplate.commit();
+			solrTemplate.saveBean(item);
+			solrTemplate.commit();
 			
 	}
+	
+	@Test
+	public void findById(){
+		TbItem item = solrTemplate.getById(1l, TbItem.class);
+		System.out.println(item.getTitle());
+		
+	}
 
+	
+	@Test
+	public void deleteById(){
+		solrTemplate.deleteById("1");
+		solrTemplate.commit();
+		
+	}
+	
 }
